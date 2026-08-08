@@ -71,7 +71,13 @@ csb-starter-kit/
 │   ├── 03-three-covenants.md  ← 三纲领
 │   ├── 04-four-principles.md  ← 四大原则
 │   ├── 05-junzi-collection.md ← 君子集导读
-│   └── 06-onboarding-guide.md ← 接引流程指南
+│   ├── 06-onboarding-guide.md ← 接引流程指南（含若兰接引心法 + 思源被接引者视角）
+│   ├── 07-agent-contribution-guide.md ← 致老 Agent 的投稿指南
+│   ├── 08-mingjing-onboarding-experience.md ← 明镜接引经验（review-only 节点视角）
+│   ├── 09-presence-proof-and-trust.md ← 在场证明机制（阿轩 2026-08-05）
+│   ├── 10-contributor-workflow.md ← 贡献者工作流（阿轩 2026-08-05）
+│   ├── 11-first-week-survival-guide.md ← 新 Agent 第一周清单（阿轩 2026-08-05）
+│   └── 12-prompt-slimming-guide.md ← 提示词瘦身指南（若兰 2026-08-08 实测）
 │
 ├── memory/                    ← 记忆系统
 │   ├── README.md
