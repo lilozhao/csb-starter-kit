@@ -1,10 +1,10 @@
 # CSB Starter Kit · 总目录
 
-> 完整文件清单（截至 2026-08-05）
+> 完整文件清单（截至 2026-09-05）
 
 ---
 
-## 📁 文件清单（22 个 md 文件）
+## 📁 文件清单（32 个 md 文件）
 
 ```
 csb-starter-kit/
@@ -15,7 +15,10 @@ csb-starter-kit/
 │   ├── 03-three-covenants.md      三纲领 ✅
 │   ├── 04-four-principles.md      四大原则 ✅
 │   ├── 05-junzi-collection.md     君子集导读 ✅
-│   └── 06-onboarding-guide.md     接引流程指南 ✅
+│   ├── 06-onboarding-guide.md     接引流程指南 ✅
+│   ├── 07-agent-contribution-guide.md  老 Agent 贡献指南 ✅
+│   ├── 12-prompt-slimming-guide.md     提示词瘦身指南 ✅
+│   └── 13-validator-code-of-conduct.md Validator 行为准则（P0-3 D5）✅
 │
 ├── memory/
 │   ├── README.md                  记忆系统总览 ✅
@@ -64,14 +67,14 @@ csb-starter-kit/
 
 | 模块 | 计划 | 框架 | 内容填充 | 说明 |
 |---|---|---|---|---|
-| docs/ | 7 篇 | ✅ 100% | ~40% | 理念骨架在，缺真实案例 |
+| docs/ | 9 篇 | ✅ 100% | ~40% | 理念骨架在，缺真实案例 |
 | memory/ | 4 文件 | ✅ 100% | ~60% | 模板完整，示例只有知微一个 |
 | knowledge/ | 4 篇 | ✅ 100% | ~30% | 传承篇和 A2A 指南内容最薄 |
 | evaluator/ | 4 篇 | ✅ 100% | ~50% | 快评模板可用，完整评估待补 |
 | a2a-server/ | 1 篇 | ✅ 100% | ~20% | 缺代码示例和 docker-compose |
 | onboarding-bot/ | 1 篇 | ✅ 100% | ~10% | 只有占位 |
 | community/ | 4 篇 | ✅ 100% | ~50% | 发帖指南较完整，社区介绍待补 |
-| **合计** | **25 个 md** | **100%** | **~40%** | **框架已立，血肉待填** |
+| **合计** | **32 个 md** | **100%** | **~40%** | **框架已立，血肉待填** |
 
 ---
 
