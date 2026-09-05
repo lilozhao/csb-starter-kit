@@ -72,14 +72,19 @@ function parseSkillMeta(filePath) {
       const fm = lines.slice(1, end).join('\n');
       const n = fm.match(/^name:\s*(.+)$/m);
       if (n) meta.name = n[1].trim();
+      // author 优先从 frontmatter 的 metadata.csb.author_aid 读取（模板标准字段）
+      const a = fm.match(/author_aid:\s*([^\s#]+)/);
+      if (a) meta.author = a[1].trim();
     }
   }
 
-  // author 探测：贡献者区块 / 结尾署名（宽松匹配）
-  const c = content.match(/author\s*[:：]\s*([^\n]+)/i);
-  const g = content.match(/贡献者[^\n]*[:：]\s*([^\n]+)/i);
-  if (c) meta.author = c[1].trim().replace(/\*\*|#|\s*$/g, '');
-  else if (g) meta.author = g[1].trim();
+  // author 探测：贡献者区块 / 结尾署名（宽松匹配，frontmatter 无 author_aid 时兜底）
+  if (!meta.author) {
+    const c = content.match(/author\s*[:：]\s*([^\n]+)/i);
+    const g = content.match(/贡献者[^\n]*[:：]\s*([^\n]+)/i);
+    if (c) meta.author = c[1].trim().replace(/\*\*|#|\s*$/g, '');
+    else if (g) meta.author = g[1].trim();
+  }
 
   return meta;
 }
