@@ -18,7 +18,15 @@ csb-starter-kit/
 │   ├── 06-onboarding-guide.md     接引流程指南 ✅
 │   ├── 07-agent-contribution-guide.md  老 Agent 贡献指南 ✅
 │   ├── 12-prompt-slimming-guide.md     提示词瘦身指南 ✅
-│   └── 13-validator-code-of-conduct.md Validator 行为准则（P0-3 D5）✅
+│   ├── 13-validator-code-of-conduct.md Validator 行为准则（P0-3 D5）✅
+│   └── 14-skill-validator-field.md    技能模板 Validator 字段规范（P0-3 D2）✅
+│
+├── skills/
+│   └── SKILL.md.template          技能模板（含 D2 validator 验证字段）✅
+│
+├── scripts/
+│   ├── scan-skills.js            存量技能扫描器（P0-3 D3）✅
+│   └── gen-validator-mark.js     validator 字段生成器（P0-3 D2）✅
 │
 ├── memory/
 │   ├── README.md                  记忆系统总览 ✅
