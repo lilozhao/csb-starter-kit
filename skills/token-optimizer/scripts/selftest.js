@@ -63,6 +63,31 @@ const d = run('audit.js', ['--days', '3', '--json']);
 let j = null; try { j = JSON.parse(d.out.replace(/^[\s\S]*?(\{[\s\S]*\})$/, '$1')); } catch { /* ignore */ }
 check('检出调用密度高', /调用密度高/.test(run('audit.js', ['--days', '3']).out) || (j && j.findings.some((f) => f.id === 2)), '每天 >200 次');
 
+// 场景 E：md-slim 执行器（只移动不删除 + 备份 + 自证）
+{
+  const WS2 = path.join(DIR, 'ws2');
+  fs.mkdirSync(WS2, { recursive: true });
+  const big = '# T.md\n\n## 正文\n核心内容\n\n## 更新历史\n' + '历史记录行\n'.repeat(400);
+  fs.writeFileSync(path.join(WS2, 'TOOLS.md'), big);
+  const env2 = { ...env, OPENCLAW_WORKSPACE: WS2 };
+  const before = fs.statSync(path.join(WS2, 'TOOLS.md')).size;
+  let out = '';
+  try {
+    out = execFileSync('node', [path.join(__dirname, 'md-slim.js'), '--file', 'TOOLS.md', '--auto', '--apply'], { env: env2, encoding: 'utf8' });
+  } catch (e) { out = String(e.stdout || e.message); }
+  const after = fs.statSync(path.join(WS2, 'TOOLS.md')).size;
+  const arcDir = path.join(WS2, 'archive');
+  const arc = fs.existsSync(arcDir) ? fs.readdirSync(arcDir) : [];
+  const bakDir = path.join(WS2, 'backups', 'md-slim');
+  const baks = fs.existsSync(bakDir) ? fs.readdirSync(bakDir) : [];
+  const body = fs.readFileSync(path.join(WS2, 'TOOLS.md'), 'utf8');
+  check('md-slim 主文件变小', after < before, `${before} → ${after} 字节`);
+  check('md-slim 生成归档文件', arc.length > 0, arc[0] || '无');
+  check('md-slim 保留指针（可检索）', /已归档/.test(body), '主文件含归档指针');
+  check('md-slim 留了备份', baks.length > 0, baks[0] || '无');
+  check('md-slim 自证通过', /自证通过|自证失败/.test(out) && !/自证失败/.test(out), (out.match(/.*自证.*/) || [''])[0].trim());
+}
+
 fs.rmSync(DIR, { recursive: true, force: true });
 console.log(`\n📊 自检结果：${pass} 通过 / ${fail} 失败`);
 process.exit(fail ? 1 : 0);

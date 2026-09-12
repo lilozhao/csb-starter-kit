@@ -28,12 +28,16 @@ node scripts/audit.js --json
 # 3) 单项工具
 node scripts/session-context-check.js        # 当前会话上下文多大（>80K 建议归档）
 node scripts/md-audit.js                     # 工作台注入文件体积 & 瘦身建议
+node scripts/md-slim.js                      # 【执行器】工作台瘦身：只移动不删除+备份+自证
 node scripts/cron-audit.js                   # cron 构成：多少任务在灌主会话
 node scripts/cron-migrate-isolated.js --dry  # 纯脚本类任务改道 isolated（先 dry-run）
 
 # 4) 应用（可回滚，改前自动备份）
+node scripts/md-slim.js --file TOOLS.md --auto --apply
 node scripts/cron-migrate-isolated.js --apply
 ```
+
+> 📖 **不知道怎么选？看 `docs/self-serve-playbook.md`（自助手册：决策矩阵 + md 瘦身专项 + 回执模板 + 三条纪律）**
 
 ## 四类问题（audit.js 会自动判定）
 
@@ -80,5 +84,5 @@ node scripts/cron-migrate-isolated.js --apply
 ## 自检
 
 ```bash
-node scripts/selftest.js     # 构造假数据，验证四类判定逻辑
+node scripts/selftest.js     # 构造假数据，验证五类判定逻辑（11 例）
 ```

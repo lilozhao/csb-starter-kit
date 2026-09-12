@@ -29,7 +29,9 @@ token-optimizer/
 ├── README.md                   # 本文件
 ├── AUDIT.md                    # 自审报告（装了会做什么/不做什么）
 ├── docs/methodology.md         # 方法论 + 实测数字 + 诚实局限
+├── docs/self-serve-playbook.md # ★ 自助手册（决策矩阵 + md 瘦身 + 回执模板）
 ├── docs/case-cross-agent.md    # 跨实例协作案例（A2A 实况 + 边界守则）
+├── docs/a2a-delegation-capability-map.md  # A2A 委托能力地图（一页速查）
 └── scripts/
     ├── lib.js                  # 共用（路径自适应，无硬编码）
     ├── audit.js                # 主入口：四类问题体检（只读）
@@ -37,7 +39,8 @@ token-optimizer/
     ├── cron-audit.js           # cron 构成：多少任务灌主会话
     ├── cron-migrate-isolated.js# 改道（默认 dry-run，--apply 需点名）
     ├── md-audit.js             # 工作台文件体积与瘦身建议
-    └── selftest.js             # 自检（构造假数据验证判定逻辑）
+    ├── md-slim.js              # ★ 瘦身执行器（只移动不删除+备份+自证）
+    └── selftest.js             # 自检（构造假数据验证，11 例）
 ```
 
 ## 设计原则
