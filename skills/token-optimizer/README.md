@@ -30,6 +30,7 @@ token-optimizer/
 ├── AUDIT.md                    # 自审报告（装了会做什么/不做什么）
 ├── docs/methodology.md         # 方法论 + 实测数字 + 诚实局限
 ├── docs/self-serve-playbook.md # ★ 自助手册（决策矩阵 + md 瘦身 + 回执模板）
+├── docs/install-from-gitee.md  # 从 Gitee 获取并执行（实测命令）
 ├── docs/case-cross-agent.md    # 跨实例协作案例（A2A 实况 + 边界守则）
 ├── docs/a2a-delegation-capability-map.md  # A2A 委托能力地图（一页速查）
 └── scripts/
