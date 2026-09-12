@@ -182,3 +182,37 @@ _实测任务号：task_1789178533…（timeout 被拒）/ task_1789178560…（
 
 - **“要不要写新脚本”→ “要不要加一条模板”**：模板 = 声明式（scope/风险/变量/正文），CLI 负责信封与协议细节
 - **模板本身也是留痕对象**：新增/修改模板应记入账本（`config/delegation-templates.json` 建议纳入受保护清单）
+  → 已纳入（`needConfirm: true`，改模板需确认）
+
+---
+
+## 八、scope=shell 实测：L3 真的拦住了（但卡在对方注入超时）
+
+用 `token-optimize-shell` 发了一次真委托（`task_1789179327…`）：
+
+| 环节 | 结果 |
+|---|---|
+| 信封校验 | ✅ 通过（delegator 识别为 `若兰 (http://…:3100)`） |
+| 风险分级 | ✅ `scope=shell` → 要求 L3 实时确认 |
+| 人工确认 | ✅ 已触发（有等待） |
+| **注入执行** | ❌ `bridge_unavailable: gateway 注入超时（90000ms）`，耗时 235s |
+
+### 结论
+
+- **协议链路是对的**：shell 类委托**没有被静默执行**，而是走到了人工确认 + 注入
+- **卡点在接收方的运行时**，不在协议：注入超时来自 `adapters/openclaw-gateway.js` 的硬编码常量
+  ```js
+  const DEFAULT_TIMEOUT_MS = 90 * 1000; // 主 agent 工具执行可能较久
+  ```
+- 对比：read 类委托（`token-audit-read`）**同一天成功执行**（26s）→ 说明基础管道是通的，
+  差别在“shell 任务更重、需等确认 + 主会话执行更久”
+
+### 给对方/读者的排查清单
+
+1. 注入超时调大：`DEFAULT_TIMEOUT_MS`（90s → 300s+），或调用处传 `opts.timeoutMs`
+2. 核对 `bridge.mainTo`（9/11 同款坑：adapter 路径与主链路读取源不一致 → “缺少主会话目标”）
+3. 跑桥接自测：`node --test tests/bridge-adapter.test.js`（9/11 已从 8 例扩到 11 例）
+4. 确认 gateway 可达 + token 有效（注入走 gateway HTTP）
+5. **先归档膨胀会话**：主会话越大，注入越慢——病先治，再委托
+
+> 一句话：**“直接执行”的正路是 L3 确认；L3 通了，剩下的就是对方的运行时调优。**
