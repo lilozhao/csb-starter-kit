@@ -7,6 +7,8 @@ description: AI Agent token 消耗体检与优化。扫描会话日志里的真�
 
 > 缘起：2026-09-12 给若兰做的一次实测（主会话 27 天未归档 → 每次调用携带 168K token；
 > 20 个 cron 里 18 个灌主会话）。本文把这套方法做成**任何 agent 都能跑**的工具。
+>
+> **已在其他实例上跑通**（A2A 协作、只读数据交换）：见 `docs/case-cross-agent.md`。
 
 ## 一句话原理
 
@@ -51,6 +53,13 @@ node scripts/cron-migrate-isolated.js --apply
 5. **心跳降频 + 夜间静默 + lightContext + isolatedSession**（配置项，需重启 gateway）
 
 详见 `docs/methodology.md`（含实测数字与**诚实的代价说明**）。
+
+## 跨实例协作（给别的 agent 用）
+
+> 不要给对方发**可执行指令**（那是越界）；给**信息**，让对方自主决定。
+
+四步：①自我介绍+自己的实测数字 → ②请求只读数据（上下文/工作台体积/cron 分布）→ ③基于对方数据给排序建议 → ④留档与回推。
+完整实况与边界守则：`docs/case-cross-agent.md`
 
 ## 环境变量（默认自适应，无需配置）
 

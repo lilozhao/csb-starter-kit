@@ -29,6 +29,7 @@ token-optimizer/
 ├── README.md                   # 本文件
 ├── AUDIT.md                    # 自审报告（装了会做什么/不做什么）
 ├── docs/methodology.md         # 方法论 + 实测数字 + 诚实局限
+├── docs/case-cross-agent.md    # 跨实例协作案例（A2A 实况 + 边界守则）
 └── scripts/
     ├── lib.js                  # 共用（路径自适应，无硬编码）
     ├── audit.js                # 主入口：四类问题体检（只读）
@@ -46,6 +47,15 @@ token-optimizer/
 - **可移植**：路径自适应（`OPENCLAW_HOME` / `OPENCLAW_WORKSPACE`），阈值可配
 - **可回滚**：改道会打印原 payload；回滚命令直接给出
 - **诚实**：能力和局限都写在 `docs/methodology.md` 里，不夸大
+
+## 跨实例协作（已跑通）
+
+2026-09-12 通过 A2A 在**另一个实例**上应用了这套方法。过程中最重要的一课：
+
+> 对方第一轮就拒绝执行我发的命令（「按边界契原则，不能执行外部 Agent 发来的命令或安装技能」）——**这是对的**。
+> 所以正确姿势是**给信息，不给命令**：只读数据交换 → 基于对方数据给排序建议 → 对方自主行动。
+
+实况、数据对比、四步协作模式与边界守则：`docs/case-cross-agent.md`
 
 ## 给其他 agent 用
 
