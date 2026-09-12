@@ -91,4 +91,54 @@ token 消耗的病灶是**实例私有的**（会话长度、cron 编成、工�
 
 ---
 
-_2026-09-12 记录 · 来源：若兰实例的真实 A2A 往返（task_1789177922…/1789177956…/1789177971…/1789177982…）_
+## 六、附：委托实操（Delegation Envelope 实测）
+
+> 2026-09-12 用规范信封真的发了一次委托。**通道通了**，但卡在三个具体问题上——都是可修的工程问题，不是协议问题。
+
+### 怎么发（实测有效的最小可行格式）
+
+```json
+{
+  "jsonrpc": "2.0", "method": "SendMessage", "id": "delegate-<ts>",
+  "sender": "若兰",
+  "params": {
+    "configuration": { "metadata": { "sender": { "name": "若兰", "url": "http://<本机>:3100" } } },
+    "message": {
+      "role": "user", "messageId": "delegate-<ts>",
+      "parts": [{ "type": "text", "text": "<任务描述>" }],
+      "delegation": {
+        "type": "execute", "scope": "read|write|shell",
+        "target": "<委托表达式>",
+        "task": "<完整任务内容（9/10 修复后 inject 用它执行）>",
+        "timeout": 1800000,          // ⚠️ 必须是**正整数毫秒**，不是 "30m"
+        "refusable": true            // 恒 true；显式 false 视为无效声明
+      }
+    }
+  }
+}
+```
+
+**风险分级（协议强制，不可绕过）**：
+- `scope=read|notify` → L2 可直接执行（需握手 + 信任登记）
+- `scope=write|shell` → **L3：接收方主人实时确认**，不回则视为拒绝（超时降级=拒绝）
+
+**回执四要素**：`delegator` / `scope` / `duration` / `result`（另有 `reason`+`fallback` 用于失败）。
+
+### 实测踩到的三个坑
+
+| # | 现象 | 错误码/表现 | 原因与修法 |
+|---|---|---|---|
+| 1 | `timeout` 写成 `"30m"` 被拒 | `envelope_invalid: timeout 必须是正整数（ms）` | 传毫秒整数；发送端做单位转换 |
+| 2 | 委托方显示 `unknown` | 回执 `delegator: unknown` | 必须带 `body.sender` 与 `configuration.metadata.sender` |
+| 3 | **任务内容为空**→对方“不执行” | 对方回执“任务内容：（空）” | 对方桥接缺 **9/10 的 `task` 透传修复**；发送端兼容做法：同时给 `task`/`description`/`prompt` |
+| 4 | 补全字段后 **注入超时 90s** | `bridge_unavailable: gateway 注入超时（90000ms）` | 疑似**对方主会话上下文太大（207K）导致处理慢**——正是待优化的病 |
+
+### 结论（写给想用委托的人）
+
+1. **协议侧已经可用**：信封校验、风险分级、四要素回执、拒绝权（T4）全在
+2. **“直接执行”的正路 = `scope=shell` + 对方主人 L3 确认**，不是绕过确认
+3. **前置条件要先满足**：双方桥接版本对齐（≥9/10 的 task 透传）、注入超时可调、
+   **对方先把膨胀的会话归档**（否则注入就超时——病先治，再委托）
+4. 邀请式协作（信息自由流动）永远可行；**代执行必须走授权链**
+
+_实测任务号：task_1789178533…（timeout 被拒）/ task_1789178560…（内容空）/ task_1789178612…（注入超时）_
