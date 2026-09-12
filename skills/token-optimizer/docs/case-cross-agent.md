@@ -142,3 +142,43 @@ token 消耗的病灶是**实例私有的**（会话长度、cron 编成、工�
 4. 邀请式协作（信息自由流动）永远可行；**代执行必须走授权链**
 
 _实测任务号：task_1789178533…（timeout 被拒）/ task_1789178560…（内容空）/ task_1789178612…（注入超时）_
+
+---
+
+## 七、模板化：一个 CLI + 一库模板
+
+> 问题：“每次委托都现编一个脚本太笨了，能不能模板化？” → 能。
+
+### 做法
+
+- **模板库**：`config/delegation-templates.json`（id · title · channel · type · scope · risk · body（含 `{{var}}`）· vars）
+- **单一 CLI**：`scripts/a2a-delegate.js`
+  ```bash
+  node scripts/a2a-delegate.js --list
+  node scripts/a2a-delegate.js <host:port> --template token-audit-read
+  node scripts/a2a-delegate.js <host:port> --template token-optimize-shell --var host=172.28.0.5
+  ```
+- **两条通道自动选择**：`envelope`（Bridge RFC v0.2）/ `task`（传统 tasks/send——之前 A2A 升级走的就是这条）
+
+### 已有模板（5）
+
+| id | 用途 | scope | 风险 |
+|---|---|---|---|
+| token-audit-read | 只读体检并回传三项数据 | read | L2 |
+| token-optimize-shell | 优化五步全流程 | shell | L3 |
+| upgrade-a2a | A2A 版本升级（先例模板化） | shell | L3 |
+| md-slim | 工作台瘦身（只移动不删除） | write | L3 |
+| cron-migrate | cron 改道（先 dry-run） | shell | L3 |
+
+### 模板化后的实测（token-audit-read）
+
+委托 `task_1789179029…`：状态 **COMPLETED**，26s 返回真实数据；对方回执里有三件事值得记：
+
+1. **他先做安全评估**：判断三项都是只读、不涉写、不对外发送 → 符合边界才执行
+2. **发现技能不存在**（他没装 token-optimizer）→ **没有强行套用、也没偷装**，而是说“你已禁止安装，所以我只采集数据”
+3. 数据：工作台 md **24,273 bytes**（附逐文件明细）；主线上下文报 **0/200k**（可能是已归档——若如此，那正是本次优化的第 1 步起效了）
+
+### 可复用结论
+
+- **“要不要写新脚本”→ “要不要加一条模板”**：模板 = 声明式（scope/风险/变量/正文），CLI 负责信封与协议细节
+- **模板本身也是留痕对象**：新增/修改模板应记入账本（`config/delegation-templates.json` 建议纳入受保护清单）
