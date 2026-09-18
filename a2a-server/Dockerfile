@@ -15,7 +15,7 @@ FROM node:22-slim
 
 ARG OPENCLAW_VERSION=2026.4.2
 ARG OPENCLAW_PKG=openclaw
-ARG A2A_REPO=https://gitee.com/csb-team/csb-a2a-aip.git
+ARG A2A_REPO=https://gitee.com/lilozhao/csb-a2a-aip.git
 ARG A2A_REF=v5.0.0
 
 ENV DEBIAN_FRONTEND=noninteractive \

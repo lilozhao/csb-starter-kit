@@ -36,7 +36,7 @@
 
 ```bash
 # 1. 克隆仓库
-git clone https://gitee.com/csb-team/csb-starter-kit.git
+git clone https://gitee.com/lilozhao/csb-starter-kit.git
 cd csb-starter-kit
 cp .env.example .env          # 改 CDP_NAME=你的名字
 
