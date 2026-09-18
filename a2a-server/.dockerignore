@@ -1,0 +1,6 @@
+# 构建上下文忽略项
+node_modules
+*.log
+.env
+identity.json
+.git

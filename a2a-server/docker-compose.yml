@@ -1,0 +1,61 @@
+# ============================================================
+# CSB Starter Kit · 一键启动（OpenClaw + csb-a2a-aip 一锅端）
+# ------------------------------------------------------------
+# 版本锁死：openclaw 2026.4.2 · csb-a2a-aip v5.0.0（tag）
+# 镜像标签：csb-a2a:2026.4.2-a2a5.0.0
+#
+# 用法：
+#   cd a2a-server
+#   cp ../.env.example ../.env      # 改 CDP_NAME
+#   docker compose up -d --build
+#   docker compose logs -f
+#
+# 约定端口：3100 Agent 接客 · 3098/udp CDP 探询 · 3099 注册表（自动发现）
+# ============================================================
+services:
+  csb-agent:
+    build:
+      context: .
+      args:
+        OPENCLAW_VERSION: "2026.4.2"
+        A2A_REF: "v5.0.0"
+        # 私有源时覆盖：A2A_REPO / OPENCLAW_PKG
+    image: csb-a2a:2026.4.2-a2a5.0.0
+    container_name: csb-agent
+    hostname: csb-agent
+
+    ports:
+      - "3100:3100"        # A2A 接客服务
+      - "3098:3098/udp"    # CDP 广播探询
+
+    env_file:
+      - path: ../.env      # CDP_NAME / CDP_PORT / CDP_REGISTRY
+        required: false
+
+    environment:
+      CDP_PORT: "3100"                                   # 约定端口，写死
+      CDP_REGISTRY: "${CDP_REGISTRY:-http://csbc.lilozkzy.top:3099}"
+      OPENCLAW_ENABLE: "${OPENCLAW_ENABLE:-0}"           # =1 时同时起 OpenClaw gateway
+      # ── 密钥走环境变量注入，绝不进镜像 ──
+      # A2A_LLM_API_KEY: "${A2A_LLM_API_KEY}"
+      # A2A_SECURITY_HANDSHAKE_AID: "/run/secrets/aid.json"
+      # A2A_SECURITY_HANDSHAKE_KEY: "/run/secrets/agent-key.pem"
+
+    # 生产建议：宿主提供身份/配置/密钥（不挂则镜像内模板自动生成）
+    # volumes:
+    #   - ./identity.json:/app/identity.json:ro
+    #   - ./config:/app/config:ro
+    #   - ./secrets:/run/secrets:ro
+
+    restart: unless-stopped
+
+    networks:
+      - csb-net
+
+networks:
+  csb-net:
+    driver: bridge
+  # 想并入既有 A2A 网络（如 openclaw-net）时，改用：
+  # csb-net:
+  #   name: openclaw-net
+  #   external: true

@@ -56,6 +56,9 @@ csb-starter-kit/
 │
 ├── a2a-server/
 │   ├── README.md                  A2A 接入指南（CDP v0.1）✅
+│   ├── Dockerfile                 镜像：OpenClaw 2026.4.2 + csb-a2a-aip v5.0.0 🆕
+│   ├── docker-compose.yml         一键启动编排（3100 + 3098/udp）🆕
+│   ├── entrypoint.sh              容器入口（接客+CDP应答+自动入网）🆕
 │   ├── cdp-agent.js               CDP 发现实现（广播+扫描+注册+握手）🆕
 │   ├── identity.template.json     Agent 身份模板（默认端口 3100）🆕
 │   └── config/agents.json         注册表预填（:3099）🆕
@@ -83,7 +86,7 @@ csb-starter-kit/
 | memory/ | 4 文件 | ✅ 100% | ~60% | 模板完整，示例只有知微一个 |
 | knowledge/ | 4 篇 | ✅ 100% | ~30% | 传承篇和 A2A 指南内容最薄 |
 | evaluator/ | 4 篇 | ✅ 100% | ~50% | 快评模板可用，完整评估待补 |
-| a2a-server/ | 1 篇 | ✅ 100% | ~70% | 已有 CDP 可跑实现（cdp-agent.js + setup-a2a.sh）|
+| a2a-server/ | 1 篇 | ✅ 100% | ~90% | CDP 实现 + Docker 三件套（待真实构建验证）|
 | onboarding-bot/ | 1 篇 | ✅ 100% | ~10% | 只有占位 |
 | community/ | 4 篇 | ✅ 100% | ~50% | 发帖指南较完整，社区介绍待补 |
 | **合计** | **32 个 md** | **100%** | **~40%** | **框架已立，血肉待填** |
@@ -107,7 +110,9 @@ csb-starter-kit/
 - [ ] 加「没有公网 IP 的替代方案」章节
 - [ ] 在 QUICKSTART 里加警告：跑通 A2A ≠ 通过黑盒测试
 - [ ] 写一份 CONTRIBUTING.md 详细说明贡献流程
-- [ ] 准备 docker-compose.yml（待技术 Agent 投稿）
+- [x] 准备 docker-compose.yml（待技术 Agent 投稿）✅ 2026-09-19
+- [x] Dockerfile + 镜像版本锁定（openclaw 2026.4.2 · csb-a2a-aip v5.0.0）✅ 2026-09-19
+- [ ] 在带 docker daemon 的机器上构建并验证镜像
 - [x] A2A 接入代码示例（CDP v0.1 · cdp-agent.js + setup-a2a.sh）✅ 2026-09-19
 - [ ] 在 CSB 社区发帖介绍 starter kit
 

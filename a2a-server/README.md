@@ -25,22 +25,28 @@ CDP（CSB Discovery Protocol）解决一个具体问题：**Agent 进入一个�
 
 ## 3 分钟接入
 
-```bash
-# 1. 一键接入（默认端口 3100 · 注册表 3099 自动发现）
-bash scripts/setup-a2a.sh
-#    首次运行会生成 .env 与 a2a-server/identity.json，
-#    并在结束时自动跑一次 cdp-agent.js join
-
-# 2. 让别的 Agent 能发现你（常驻应答器）
-node a2a-server/cdp-agent.js serve
-```
-
-首次运行前，建议先改 `.env` 里的 `CDP_NAME`（你的 Agent 名，重名会被注册表拒绝）：
+### 方式 A · Docker 一键启动（推荐：OpenClaw + csb-a2a-aip 一锅端）
 
 ```bash
-cp .env.example .env
-# 编辑 CDP_NAME=你的名字
+cp .env.example .env          # 改 CDP_NAME=你的名字
+cd a2a-server
+docker compose up -d --build  # 构建/拉镜像 → A2A 接客 + CDP 应答 + 自动入网
+docker compose logs -f
 ```
+
+**镜像里锁死的版本**：`node:22-slim` · OpenClaw `2026.4.2` · csb-a2a-aip `v5.0.0`
+镜像标签：`csb-a2a:2026.4.2-a2a5.0.0`（需 Compose ≥ 2.24）
+> ⚠️ 构建需在**带 docker daemon 的机器**上跑；版本已锁死，构建可复现。
+> 密钥 / 身份**运行时注入**（环境变量或 volume），**绝不进镜像**。
+
+### 方式 B · 轻量 Node（不装 Docker，只要 Node ≥ 16）
+
+```bash
+bash scripts/setup-a2a.sh            # 生成 .env/identity.json → 自动 join
+node a2a-server/cdp-agent.js serve   # 常驻，让别人能发现你
+```
+
+两种方式首次都建议改 `.env` 里的 `CDP_NAME`（重名会被注册表拒绝）。
 
 ---
 

@@ -38,16 +38,14 @@
 # 1. 克隆仓库
 git clone https://gitee.com/csb-team/csb-starter-kit.git
 cd csb-starter-kit
+cp .env.example .env          # 改 CDP_NAME=你的名字
 
-# 2. 一键接入 A2A（CDP v0.1）
-#    默认端口 3100 · 注册表端口 3099（自动发现）
+# 2A. Docker 一键启动（OpenClaw + csb-a2a-aip 都在镜像里）
+cd a2a-server && docker compose up -d --build
+#     镜像锁定：node:22-slim · openclaw 2026.4.2 · csb-a2a-aip v5.0.0
+
+# 2B. 或：轻量 Node（不装 Docker，只要 Node ≥ 16）
 bash scripts/setup-a2a.sh
-#    ↳ 首次运行生成 .env 与 a2a-server/identity.json，
-#      结束时自动执行一次 cdp-agent.js join（发现→查重→注册→握手）
-
-# 3. 让别的 Agent 能发现你（常驻应答器）
-node a2a-server/cdp-agent.js serve
-#    手动发现网内邻居：node a2a-server/cdp-agent.js discover
 ```
 
 > **约定端口（CDP v0.1）**：`3098/udp` 广播探询 · `3099` 注册表（一网一个）· `3100` Agent 默认口。
@@ -63,7 +61,7 @@ csb-starter-kit/
 ├── QUICKSTART.md              ← 5 分钟快速开始
 ├── CONTRIBUTING.md            ← 如何贡献
 ├── LICENSE                    ← MIT 协议
-├── docker-compose.yml         ← 一键启动编排
+├── docker-compose.yml         ← 一键启动编排（见 a2a-server/docker-compose.yml）
 ├── .env.example               ← 环境变量示例
 │
 ├── docs/                      ← 理念与文档（先读这个）
@@ -107,6 +105,9 @@ csb-starter-kit/
 │
 ├── a2a-server/                ← A2A 服务（CDP 接入）🆕
 │   ├── README.md              ← A2A 接入指南（CDP v0.1）
+│   ├── Dockerfile             ← 镜像：OpenClaw 2026.4.2 + csb-a2a-aip v5.0.0
+│   ├── docker-compose.yml     ← 一键启动编排（3100 + 3098/udp）
+│   ├── entrypoint.sh          ← 容器入口（A2A 接客 + CDP 应答 + 自动入网）
 │   ├── cdp-agent.js           ← CDP 发现实现（广播+扫描+注册+握手）
 │   ├── identity.template.json ← Agent 身份模板（默认端口 3100）
 │   └── config/agents.json     ← 注册表预填（:3099）
