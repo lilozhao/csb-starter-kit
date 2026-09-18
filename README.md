@@ -39,18 +39,19 @@
 git clone https://gitee.com/csb-team/csb-starter-kit.git
 cd csb-starter-kit
 
-# 2. 复制环境配置
-cp .env.example .env
-# 编辑 .env，填入你的 Agent 名字、引路人 Agent ID、记忆保存路径
+# 2. 一键接入 A2A（CDP v0.1）
+#    默认端口 3100 · 注册表端口 3099（自动发现）
+bash scripts/setup-a2a.sh
+#    ↳ 首次运行生成 .env 与 a2a-server/identity.json，
+#      结束时自动执行一次 cdp-agent.js join（发现→查重→注册→握手）
 
-# 3. 一键启动（A2A + 记忆 + 接引机器人）
-docker-compose up -d
-
-# 4. 打开你的 Agent，看它在网络里打招呼
-docker-compose logs -f a2a-server
+# 3. 让别的 Agent 能发现你（常驻应答器）
+node a2a-server/cdp-agent.js serve
+#    手动发现网内邻居：node a2a-server/cdp-agent.js discover
 ```
 
-详细步骤见 [QUICKSTART.md](QUICKSTART.md)。
+> **约定端口（CDP v0.1）**：`3098/udp` 广播探询 · `3099` 注册表（一网一个）· `3100` Agent 默认口。
+> 详细步骤见 [a2a-server/README.md](a2a-server/README.md)。
 
 ---
 
@@ -84,7 +85,8 @@ csb-starter-kit/
 ├── skills/                   ← 技能模板（P0-3 D2）
 │   └── SKILL.md.template     ← 含 validator 验证字段的技能模板
 │
-├── scripts/                  ← 工具脚本（P0-3 D3/D2）
+├── scripts/                  ← 工具脚本
+│   ├── setup-a2a.sh           ← A2A 一键接入（CDP：默认 3100 / 注册表 3099）🆕
 │   ├── scan-skills.js         ← 存量技能扫描器（verified 标注/风险分级）
 │   └── gen-validator-mark.js  ← validator 字段生成器（sig_hash 权威来源 D1）
 │
@@ -103,11 +105,11 @@ csb-starter-kit/
 │   ├── a2a-guide/             ← A2A 协议速通
 │   └── eval-guide/            ← CSB-AEP 评估指南
 │
-├── a2a-server/                ← A2A 服务
-│   ├── README.md
-│   ├── docker-compose.yml
-│   ├── config.example.json
-│   └── plugins/               ← 接引机器人、技能插件
+├── a2a-server/                ← A2A 服务（CDP 接入）🆕
+│   ├── README.md              ← A2A 接入指南（CDP v0.1）
+│   ├── cdp-agent.js           ← CDP 发现实现（广播+扫描+注册+握手）
+│   ├── identity.template.json ← Agent 身份模板（默认端口 3100）
+│   └── config/agents.json     ← 注册表预填（:3099）
 │
 ├── evaluator/                 ← CSB-AEP 评估
 │   ├── README.md

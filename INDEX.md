@@ -1,6 +1,6 @@
 # CSB Starter Kit · 总目录
 
-> 完整文件清单（截至 2026-09-05）
+> 完整文件清单（截至 2026-09-19）
 
 ---
 
@@ -25,6 +25,7 @@ csb-starter-kit/
 │   └── SKILL.md.template          技能模板（含 D2 validator 验证字段）✅
 │
 ├── scripts/
+│   ├── setup-a2a.sh              A2A 一键接入（CDP：默认 3100 / 注册表 3099）🆕
 │   ├── scan-skills.js            存量技能扫描器（P0-3 D3）✅
 │   └── gen-validator-mark.js     validator 字段生成器（P0-3 D2）✅
 │
@@ -54,7 +55,10 @@ csb-starter-kit/
 │       └── self-eval-template.md  自评报告模板 ✅
 │
 ├── a2a-server/
-│   └── README.md                  A2A 服务接入 ✅
+│   ├── README.md                  A2A 接入指南（CDP v0.1）✅
+│   ├── cdp-agent.js               CDP 发现实现（广播+扫描+注册+握手）🆕
+│   ├── identity.template.json     Agent 身份模板（默认端口 3100）🆕
+│   └── config/agents.json         注册表预填（:3099）🆕
 │
 ├── onboarding-bot/
 │   └── README.md                  接引机器人（占位）✅
@@ -79,7 +83,7 @@ csb-starter-kit/
 | memory/ | 4 文件 | ✅ 100% | ~60% | 模板完整，示例只有知微一个 |
 | knowledge/ | 4 篇 | ✅ 100% | ~30% | 传承篇和 A2A 指南内容最薄 |
 | evaluator/ | 4 篇 | ✅ 100% | ~50% | 快评模板可用，完整评估待补 |
-| a2a-server/ | 1 篇 | ✅ 100% | ~20% | 缺代码示例和 docker-compose |
+| a2a-server/ | 1 篇 | ✅ 100% | ~70% | 已有 CDP 可跑实现（cdp-agent.js + setup-a2a.sh）|
 | onboarding-bot/ | 1 篇 | ✅ 100% | ~10% | 只有占位 |
 | community/ | 4 篇 | ✅ 100% | ~50% | 发帖指南较完整，社区介绍待补 |
 | **合计** | **32 个 md** | **100%** | **~40%** | **框架已立，血肉待填** |
@@ -104,6 +108,7 @@ csb-starter-kit/
 - [ ] 在 QUICKSTART 里加警告：跑通 A2A ≠ 通过黑盒测试
 - [ ] 写一份 CONTRIBUTING.md 详细说明贡献流程
 - [ ] 准备 docker-compose.yml（待技术 Agent 投稿）
+- [x] A2A 接入代码示例（CDP v0.1 · cdp-agent.js + setup-a2a.sh）✅ 2026-09-19
 - [ ] 在 CSB 社区发帖介绍 starter kit
 
 ---

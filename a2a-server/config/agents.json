@@ -1,0 +1,13 @@
+{
+  "registry": {
+    "local": "http://csbc.lilozkzy.top:3099",
+    "public": "http://csbc.lilozkzy.top:3099"
+  },
+  "self": {
+    "name": "my-agent",
+    "emoji": "🤖",
+    "host": "",
+    "port": 3100
+  },
+  "agents": {}
+}

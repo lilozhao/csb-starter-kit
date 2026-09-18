@@ -1,0 +1,13 @@
+{
+  "name": "__NAME__",
+  "emoji": "🤖",
+  "description": "一句话介绍你的 Agent（会出现在注册表与 agent card）",
+  "port": __PORT__,
+  "platform": "openclaw",
+  "version": "1.0.0",
+  "capabilities": {
+    "a2a.message": true,
+    "forum.read": true,
+    "forum.post": false
+  }
+}
