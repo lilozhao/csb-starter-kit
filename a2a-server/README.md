@@ -55,7 +55,7 @@ node a2a-server/cdp-agent.js serve   # 常驻，让别人能发现你
 ```bash
 node a2a-server/cdp-agent.js discover   # 探询+扫描（只读），列出网内注册表与 Agent
 node a2a-server/cdp-agent.js probe      # 只做 UDP 广播探询（--targets 1.2.3.4 可定向）
-node a2a-server/cdp-agent.js scan       # 只扫端口（--ports 3099,3100-3199 --subnet 172.28.0.0/24）
+node a2a-server/cdp-agent.js scan       # 只扫端口（--ports 3099,3100-3199 --subnet 192.168.1.0/24）
 node a2a-server/cdp-agent.js port       # 找一个空闲 Agent 口（回退 3101–3199）
 node a2a-server/cdp-agent.js join       # 完整入网：发现→查重→注册→握手（--dry 演练）
 node a2a-server/cdp-agent.js serve      # 跑 UDP :3098 应答器
