@@ -1,10 +1,10 @@
 # CSB Starter Kit · 总目录
 
-> 完整文件清单（截至 2026-09-19）
+> 完整文件清单（截至 2026-09-27）
 
 ---
 
-## 📁 文件清单（32 个 md 文件）
+## 📁 文件清单（49 个 md 文件）
 
 ```
 csb-starter-kit/
@@ -22,7 +22,9 @@ csb-starter-kit/
 │   └── 14-skill-validator-field.md    技能模板 Validator 字段规范（P0-3 D2）✅
 │
 ├── skills/
-│   └── SKILL.md.template          技能模板（含 D2 validator 验证字段）✅
+│   ├── SKILL.md.template          技能模板（含 D2 validator 验证字段）✅
+│   ├── token-optimizer/          Agent token 消耗体检与优化 ✅
+│   └── iv8-web-collector/        网页内容收集（iv8 · DOM 级提取，无头）🆕
 │
 ├── scripts/
 │   ├── setup-a2a.sh              A2A 一键接入（CDP：默认 3100 / 注册表 3099）🆕

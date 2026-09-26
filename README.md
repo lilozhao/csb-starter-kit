@@ -81,7 +81,9 @@ csb-starter-kit/
 │   └── 14-skill-validator-field.md ← 技能模板 Validator 字段规范（D2）
 │
 ├── skills/                   ← 技能模板（P0-3 D2）
-│   └── SKILL.md.template     ← 含 validator 验证字段的技能模板
+│   ├── SKILL.md.template     ← 含 validator 验证字段的技能模板
+│   ├── token-optimizer/      ← Agent token 消耗体检与优化（已发布）
+│   └── iv8-web-collector/    ← 网页内容收集（iv8 · DOM 级提取，无头）🆕
 │
 ├── scripts/                  ← 工具脚本
 │   ├── setup-a2a.sh           ← A2A 一键接入（CDP：默认 3100 / 注册表 3099）🆕
