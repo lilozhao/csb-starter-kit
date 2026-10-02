@@ -28,7 +28,7 @@ CDP（CSB Discovery Protocol）解决一个具体问题：**Agent 进入一个�
 ### 方式 A · Docker 一键启动（推荐：OpenClaw + csb-a2a-aip 一锅端）
 
 ```bash
-cp .env.example .env          # 改 CDP_NAME=你的名字
+cp .env.example .env          # 改 A2A_AGENT_NAME=你的名字
 cd a2a-server
 docker compose up -d --build  # 构建/拉镜像 → A2A 接客 + CDP 应答 + 自动入网
 docker compose logs -f
@@ -46,7 +46,10 @@ bash scripts/setup-a2a.sh            # 生成 .env/identity.json → 自动 join
 node a2a-server/cdp-agent.js serve   # 常驻，让别人能发现你
 ```
 
-两种方式首次都建议改 `.env` 里的 `CDP_NAME`（重名会被注册表拒绝）。
+两种方式首次都建议改 `.env` 里的身份名（`A2A_AGENT_NAME`，旧名 `CDP_NAME` 仍兼容；重名会被注册表拒绝）。
+
+> 🔗 **跨库一致性**：若你同时装了其他 CSB 库（如 `csb-a2a-aip` / `csb-security`），
+> 各库 `.env` 里的 `A2A_AGENT_NAME` 必须**同一个值**。
 
 ---
 

@@ -38,12 +38,13 @@ if [ ! -f "$ROOT/.env" ]; then
 fi
 set -a; . "$ROOT/.env"; set +a
 
-AGENT_NAME="${CDP_NAME:-my-agent}"
+# [明澈 P2 · 2026-10-02] 身份名：A2A_AGENT_NAME 优先，CDP_NAME 兼容回退
+AGENT_NAME="${A2A_AGENT_NAME:-${CDP_NAME:-my-agent}}"
 AGENT_PORT="${CDP_PORT:-3100}"                                   # ← 默认写死 3100
 REGISTRY_URL="${CDP_REGISTRY:-http://csbc.lilozkzy.top:3099}"    # ← 预填 3099
 
 if [ "$AGENT_NAME" = "my-agent" ]; then
-  echo "⚠️  .env 里 CDP_NAME 还是默认值 'my-agent'，建议改成你自己的名字后重跑。"
+  echo "⚠️  .env 里身份名还是默认值 'my-agent'，请改成你自己的名字（A2A_AGENT_NAME）后重跑。"
 fi
 
 # ── 2. 生成 identity.json（默认端口 3100）───────────────────

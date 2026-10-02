@@ -12,7 +12,8 @@ A2A_DIR=/opt/csb-a2a-aip
 APP_DIR=/app
 cd "$APP_DIR"
 
-NAME="${CDP_NAME:-my-agent}"
+# [明澈 P2 · 2026-10-02] 身份名：A2A_AGENT_NAME 优先，CDP_NAME 兼容回退
+NAME="${A2A_AGENT_NAME:-${CDP_NAME:-my-agent}}"
 PORT="${CDP_PORT:-3100}"
 
 # ── 身份：无则从模板生成（端口默认 3100）──────────────────

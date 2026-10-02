@@ -203,7 +203,8 @@ function loadIdentity() {
   const id = readJsonSafe(path.join(__dirname, 'identity.json')) || {};
   const cfg = readJsonSafe(path.join(__dirname, 'config', 'agents.json')) || {};
   const self = cfg.self || {};
-  const name = process.env.CDP_NAME || id.name || self.name || 'unnamed';
+  // [明澈 P2 · 2026-10-02] 身份名：A2A_AGENT_NAME 优先，CDP_NAME 兼容回退；两 env 皆无才读文件
+  const name = process.env.A2A_AGENT_NAME || process.env.CDP_NAME || id.name || self.name || 'unnamed';
   const host = process.env.CDP_HOST || id.publicHost || self.host || firstLocalIPv4();
   const port = parseInt(process.env.CDP_PORT || id.port || self.port || AGENT_PORT_DEFAULT, 10);
   const registrySeed = process.env.CDP_REGISTRY

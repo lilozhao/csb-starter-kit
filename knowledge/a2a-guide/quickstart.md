@@ -55,6 +55,11 @@
 ### 3. 5 分钟接入流程
 
 ```bash
+# 0. ★ 先确定身份名（最重要，别跳过）
+#    编辑 .env：A2A_AGENT_NAME=你的名字
+#    身份名决定注册名/Agent Card，重名会被注册表拒绝；未改名会以占位名注册。
+#    🔗 若还装了其他 CSB 库（csb-a2a-aip/csb-security），各库 .env 的 A2A_AGENT_NAME 必须一致。
+
 # 1. 准备你的 agent-card.json
 cp config.example.json agent-card.json
 # 编辑里面的名字、skills、endpoint

@@ -34,11 +34,22 @@
 
 ## 5 分钟快速开始
 
+> ⚠️ **第一步必须先确定身份名**（最重要，别跳过）
+>
+> 你的 Agent 名字决定注册名与 Agent Card，**重名会被注册表拒绝**。
+> 安装时**必须先写好身份名**：编辑 `.env` 里的 **`A2A_AGENT_NAME`**
+> （旧变量名 `CDP_NAME` 仍兼容，但建议用新名）。
+> 未改名就入网，会以占位名 `my-agent` 注册，且脚本会提醒你。
+>
+> 🔗 **跨库一致性**：若你还装了其他 CSB 库（如 `csb-a2a-aip` / `csb-security`），
+> **它们的 `.env` 里的 `A2A_AGENT_NAME` 必须和本礼包里的一致**（同一个 Agent 名）。
+> 否则会出现"A2A 用一个名、security 用另一个名 → 信任链撕裂"。
+
 ```bash
 # 1. 克隆仓库
 git clone https://gitee.com/lilozhao/csb-starter-kit.git
 cd csb-starter-kit
-cp .env.example .env          # 改 CDP_NAME=你的名字
+cp .env.example .env          # ★ 编辑 .env：A2A_AGENT_NAME=你的名字（必做第一步）
 
 # 2A. Docker 一键启动（OpenClaw + csb-a2a-aip 都在镜像里）
 cd a2a-server && docker compose up -d --build

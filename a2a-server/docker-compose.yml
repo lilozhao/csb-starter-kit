@@ -6,7 +6,7 @@
 #
 # 用法：
 #   cd a2a-server
-#   cp ../.env.example ../.env      # 改 CDP_NAME
+#   cp ../.env.example ../.env      # 改 A2A_AGENT_NAME（旧名 CDP_NAME 兼容）
 #   docker compose up -d --build
 #   docker compose logs -f
 #
