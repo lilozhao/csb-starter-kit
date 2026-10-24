@@ -278,9 +278,32 @@ for name in $REPOS; do
 
   # 合并
   if [ "$ahead" != "0" ]; then
-    git -C "$dir" rebase "$upstream" >/dev/null 2>&1 || { err "rebase 冲突 → 已停在现场，请手动解决（git rebase --abort 可退）"; FAILED=$((FAILED+1)); continue; }
+    # [2026-10-24 舟楫实测反馈] 同类问题：旧版把 stderr 吞了，只报「rebase 冲突」。
+    #   真实原因可能是「未跟踪文件会被覆盖」（untracked working tree files would be overwritten）
+    #   —— 那根本不是冲突，处理方式完全不同（挪走文件即可，不需要解决冲突）。
+    rb_out="$(git -C "$dir" rebase "$upstream" 2>&1)" || {
+      err "rebase 未完成 → 已停在现场（git rebase --abort 可退）"
+      printf '%s\n' "$rb_out" | tail -6 | sed 's/^/       /'
+      case "$rb_out" in
+        *"would be overwritten by"*|*"untracked working tree"*)
+          echo "      → 这是**未跟踪文件阻挡**，不是冲突：把上面列出的文件挪走（别直接删）再重试" ;;
+        *CONFLICT*)
+          echo "      → 真冲突：手动解决后 git rebase --continue，或 git rebase --abort 放弃" ;;
+      esac
+      FAILED=$((FAILED+1)); continue
+    }
   else
-    git -C "$dir" merge --ff-only "$upstream" >/dev/null 2>&1 || { err "快进合并失败（意外），仓库未改动"; FAILED=$((FAILED+1)); continue; }
+    mg_out="$(git -C "$dir" merge --ff-only "$upstream" 2>&1)" || {
+      err "快进合并失败，仓库未改动"
+      printf '%s\n' "$mg_out" | tail -6 | sed 's/^/       /'
+      case "$mg_out" in
+        *"would be overwritten by"*|*"untracked working tree"*)
+          echo "      → 未跟踪文件会挡住合并：把上面列出的文件挪走（别直接删）再重试" ;;
+        *"Not possible to fast-forward"*)
+          echo "      → 不是快进关系（脚本判断分叉时可能被并发改过）：用 --rebase 或手动处理" ;;
+      esac
+      FAILED=$((FAILED+1)); continue
+    }
   fi
   new="$(git -C "$dir" rev-parse --short HEAD)"
   ver_new="$(repo_version "$dir")"
