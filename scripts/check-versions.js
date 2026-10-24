@@ -95,7 +95,16 @@ function findHardcoded(dir, version) {
 
 function checkRepo(dir) {
   const name = path.basename(dir);
-  const result = { name, dir, version: null, pkgVersion: null, problems: [], ok: false };
+  const result = { name, dir, version: null, pkgVersion: null, problems: [], ok: false, archived: false, archivedReason: null };
+
+  // 归档仓：不体检，但要**明确报出来**（不是静默跳过）
+  // 注意 --include-archived 时必须真的走体检，否则那是个假开关。
+  if (ARCHIVED_REPOS[name] && !INCLUDE_ARCHIVED) {
+    result.archived = true;
+    result.archivedReason = ARCHIVED_REPOS[name];
+    result.ok = true;
+    return result;
+  }
 
   const vfile = path.join(dir, 'VERSION');
   const hasVfile = fs.existsSync(vfile);
@@ -160,11 +169,38 @@ function checkRepo(dir) {
   return result;
 }
 
+/**
+ * 已归档/废弃仓库清单 —— 不参与版本体检，但**要报出来**（不静默）。
+ *
+ * 收录标准：已被新仓收编 / 上游明确停更 / 一澜确认废弃。
+ * 理由（一澜 2026-10-24 19:04）：「这两个库不用更新，已经相当于废弃了」。
+ * 给死代码补 VERSION 不是体检，是本末倒置。
+ */
+const ARCHIVED_REPOS = {
+  'csb-awakening-birthday': '2026-09-04 更名升级为 csb-awakening-standard，内容收编为 modules/awakening-birthday/',
+  'csb-agent-eval':         '评测逻辑已并入 csb-aep（v0.2 为历史版本）',
+  'csb-inheritance':        '共享技能已并入 csb-a2a-aip（VERSION 为构建号形态 csb-v3.2-…，非 semver）',
+  'csb-skill-audit':        '技能仓，随 skills/ 分发，无独立版本节奏',
+};
+
+const INCLUDE_ARCHIVED = process.argv.includes('--include-archived');
+
 function listRepos(base) {
   return fs.readdirSync(base, { withFileTypes: true })
     .filter(e => e.isDirectory() && e.name.startsWith('csb-'))
     .map(e => path.join(base, e.name))
-    .filter(d => fs.existsSync(path.join(d, 'VERSION')) || fs.existsSync(path.join(d, 'package.json')));
+    // [2026-10-24 Jeason 实测 + 一澜纠正] 两个极端都要避免：
+    //   ① 旧实现只收「有 VERSION 或 package.json」的目录 → 两样都没有的仓被**静默跳过**，
+    //      结果看着"没问题"，实际"根本没检查"。
+    //   ② 我把所有 git 仓都拉进来 → 废弃仓也报警，逼着给死代码补版本号，同样是噪声。
+    //   现在：活跃仓一律纳入；归档仓**明确标 archived 并写明原因**（不静默、不报警）。
+    .filter(d => {
+      const name = path.basename(d);
+      if (ARCHIVED_REPOS[name] && !INCLUDE_ARCHIVED) return true;  // 进来，但会被标为 archived
+      if (fs.existsSync(path.join(d, 'VERSION')) || fs.existsSync(path.join(d, 'package.json'))) return true;
+      if (fs.existsSync(path.join(d, '.git'))) return true;
+      return false;
+    });
 }
 
 // ---------- main ----------
@@ -192,7 +228,12 @@ const c = process.stdout.isTTY
 console.log(`${c.b}══ CSB 版本一致性体检 ══${c.z}`);
 for (const r of results) {
   const v = r.version || r.pkgVersion || '-';
-  if (r.ok) {
+  if (r.archived) {
+    // 归档仓：灰显 + 说明原因。既不报错（死代码不该逼着补版本），
+    // 也不静默（让看报告的人知道"这个仓存在但没体检"）。
+    console.log(`${c.dim}⊘${c.z} ${r.name.padEnd(26)} ${c.dim}已归档${c.z}`);
+    console.log(`   ${c.dim}${r.archivedReason}${c.z}`);
+  } else if (r.ok) {
     console.log(`${c.ok}✅${c.z} ${r.name.padEnd(26)} ${v}`);
   } else {
     console.log(`${c.err}❌${c.z} ${r.name.padEnd(26)} ${v}`);
@@ -204,8 +245,12 @@ for (const r of results) {
 }
 
 console.log('');
+const archivedCount = results.filter(r => r.archived).length;
+const checkedCount = results.length - archivedCount;
+const archivedNote = archivedCount ? ` · 已归档跳过 ${archivedCount}` : '';
+
 if (bad.length === 0) {
-  console.log(`${c.ok}全部一致（${results.length} 仓）${c.z}`);
+  console.log(`${c.ok}全部一致（${checkedCount} 仓）${c.z}${c.dim}${archivedNote}${c.z}`);
   process.exit(0);
 }
 console.log(`${c.err}${bad.length} 个仓有版本问题${c.z} · 修法：让 VERSION 与 package.json 同值，源码不要抄版本号`);
