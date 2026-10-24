@@ -173,6 +173,16 @@ for name in $REPOS; do
     SUMMARY+="$name|缺失|-|-|skip"$'\n'; SKIPPED=$((SKIPPED+1)); continue
   fi
 
+  # 只读挂载检测（2026-10-24 · 若琢反馈）：容器里 csb-security 是只读挂载，
+  # 升级会失败在 git fetch 那步，报「网络/凭据问题」——**是误导**。
+  # 这里提前探测，明确告诉人「这不是网络问题，是挂载只读，得去宿主侧」。
+  if ! ( : > "$dir/.git/.csb-write-test" ) 2>/dev/null; then
+    warn "$name：.git 不可写（只读挂载）→ 无法在此环境升级"
+    echo "     这不是网络问题。请在**宿主侧**更新该仓，或让宿主放开写挂载。"
+    SUMMARY+="$name|-|-|-|-|readonly"$'\n'; SKIPPED=$((SKIPPED+1)); continue
+  fi
+  rm -f "$dir/.git/.csb-write-test" 2>/dev/null
+
   branch="$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null)"
   old="$(git -C "$dir" rev-parse --short HEAD 2>/dev/null)"
   ver_old="$(repo_version "$dir")"
@@ -310,6 +320,7 @@ echo "$SUMMARY" | while IFS='|' read -r n a b c st; do
     no-remote)  mark="${C_WARN}跳过·无远程${C_0}" ;;
     missing)    mark="${C_DIM}未安装${C_0}" ;;
     skip)       mark="${C_DIM}跳过${C_0}" ;;
+    readonly)   mark="${C_WARN}跳过·只读挂载${C_0}" ;;
     behind:*)   mark="${C_WARN}${st}${C_0}" ;;
     *)          mark="$st" ;;
   esac
