@@ -325,6 +325,22 @@ else
 fi
 
 # ---------- 关键提醒（fail-closed 变更） ----------
+# ---------- 版本一致性体检（2026-10-24 新增） ----------
+# 起因：若琢升级后报出 2 处版本漂移 + 1 处硬编码。漂移不是"升错了"，
+# 是**版本号被抄了两份，改一份忘一份** —— 这类问题必须机械核对，不能靠人眼。
+CV="$(dirname "$0")/check-versions.js"
+if [ -f "$CV" ] && command -v node >/dev/null 2>&1; then
+  echo
+  if [ "$CHECK_ONLY" = 1 ]; then
+    node "$CV" --base "$BASE" 2>&1 | sed 's/^/  /'
+  elif ! node "$CV" --base "$BASE" >/dev/null 2>&1; then
+    warn "版本一致性体检发现问题（不影响本次升级，但建议修）："
+    node "$CV" --base "$BASE" 2>&1 | grep -E "^❌|\[C[123]\]" | sed 's/^/  /'
+  else
+    ok "版本一致性体检通过"
+  fi
+fi
+
 if [ "$CHECK_ONLY" = 0 ] && echo "$REPOS" | grep -qw csb-a2a-aip && [ -d "$BASE/csb-a2a-aip/.git" ]; then
   a2a_ver="$(repo_version "$BASE/csb-a2a-aip")"
   case "$a2a_ver" in
