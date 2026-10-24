@@ -16,7 +16,7 @@
 #
 # 选项：
 #   --base DIR       仓库根目录（默认自动探测：./ 或 ~/.openclaw/workspace）
-#   --repos "a b"    只处理这些仓（默认全套 7 仓）
+#   --repos "a b"    只处理这些仓（默认全套 9 仓）
 #   --check          只检查，不改动
 #   --stash          升级前 git stash（成功后再 pop）
 #   --rebase         允许 rebase 分叉（默认跳过）
@@ -32,7 +32,7 @@
 
 set -uo pipefail
 
-DEFAULT_REPOS="csb-a2a-aip csb-memory csb-aep csb-security csb-compliance-degree csb-awakening-standard csb-starter-kit"
+DEFAULT_REPOS="csb-a2a-aip csb-aep csb-memory csb-charter csb-awakening-standard csb-security csb-metacognition csb-compliance-degree csb-starter-kit"
 
 BASE=""
 REPOS="$DEFAULT_REPOS"
