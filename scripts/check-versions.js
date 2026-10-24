@@ -67,6 +67,8 @@ function findHardcoded(dir, version) {
       if (skipFiles.test(e.name)) continue;
       if (/\.(test|spec)\./.test(e.name)) continue;
       if (e.name === 'package.json') continue; // 这就是事实源本身
+      // 仓级配置文件由 C1 单独做一致性校验（见 checkRepo），这里不按"源码硬编码"处理
+      if (e.name === 'config.json' || e.name === 'config.defaults.json') continue;
       // 模板/示例/规格文件里的版本号是"被生成对象的默认值"，不是本仓版本 —— 按定义不算硬编码
       if (/(template|example|sample|\.spec\.|fixture)/i.test(e.name)) continue;
       let text;
@@ -123,6 +125,22 @@ function checkRepo(dir) {
   }
   if (!hasVfile && pkg) {
     result.problems.push({ code: 'C1', msg: `缺 VERSION 文件（package.json 为 ${result.pkgVersion}）`, hint: '建议补 VERSION 统一事实源' });
+  }
+
+  // C1 扩展：config.json 若声明了版本，必须与 package.json 一致。
+  // 依据：csb-compliance-degree 2026-10-24 的真实漂移就是 config.json 停在 2.0.0
+  // 而 VERSION 已到 2.1.0 —— 只查 package.json 会漏掉这一类。
+  const cfgPath = path.join(dir, 'config.json');
+  if (fs.existsSync(cfgPath)) {
+    let cfgVer = null;
+    try { cfgVer = JSON.parse(fs.readFileSync(cfgPath, 'utf8')).version || null; } catch { /* 坏 JSON 不在此判 */ }
+    if (cfgVer && result.pkgVersion && cfgVer !== result.pkgVersion) {
+      result.problems.push({
+        code: 'C1',
+        msg: `版本漂移：config.json=${cfgVer} ≠ package.json=${result.pkgVersion}`,
+        hint: 'config.json 是运行时被读的事实源，必须同步',
+      });
+    }
   }
 
   // C2：源码硬编码
