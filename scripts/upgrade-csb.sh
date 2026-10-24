@@ -199,8 +199,24 @@ for name in $REPOS; do
     if [ "$CHECK_ONLY" = 1 ]; then
       warn "有 $dirty 处未提交改动（真升级时默认跳过；加 --stash 可暂存）"
     elif [ "$DO_STASH" = 1 ]; then
-      git -C "$dir" stash push -m "csb-upgrade-$STAMP" >/dev/null 2>&1 \
-        && ok "已暂存 $dirty 处改动（升级后自动 pop）" || { err "stash 失败 → 跳过"; FAILED=$((FAILED+1)); continue; }
+      # [2026-10-24 舟楫实测反馈] 旧版 `>/dev/null 2>&1` 把 stash 的真实报错吞掉了：
+      #   只报「stash 失败」，不说原因（真实原因可能是 "could not write index"）。
+      #   诊断信息被吞 = 使用者只能瞎猜，与 P1「拒绝要计分」相悖。
+      # 现：捕获 stderr，失败时原样打印末几行，并给出常见成因提示。
+      stash_out="$(git -C "$dir" stash push -m "csb-upgrade-$STAMP" 2>&1)"
+      if [ $? -eq 0 ]; then
+        ok "已暂存 $dirty 处改动（升级后自动 pop）"
+      else
+        err "stash 失败 → 跳过（本仓不改动）"
+        echo "     git 原话：" | sed 's/^/   /'
+        printf '%s\n' "$stash_out" | tail -5 | sed 's/^/       /'
+        echo "     常见成因："
+        echo "       · could not write index —— 索引被锁/权限不足，或存在未合并索引条目(DU)"
+        echo "         → git status 看 'DU' 项：那是陈旧冲突条目，用 git reset -- <path> 清掉"
+        echo "       · 未跟踪的运行时文件挡住操作 → 先挪走（别直接删，可恢复）"
+        SUMMARY+="$name|$old|$ver_old|-|-|stash-fail"$'\n'
+        FAILED=$((FAILED+1)); continue
+      fi
     else
       warn "有 $dirty 处未提交改动 → 跳过（先手动提交，或加 --stash）"
       git -C "$dir" status --porcelain --untracked-files=no | head -5 | sed 's/^/     /'
@@ -321,6 +337,7 @@ echo "$SUMMARY" | while IFS='|' read -r n a b c st; do
     missing)    mark="${C_DIM}未安装${C_0}" ;;
     skip)       mark="${C_DIM}跳过${C_0}" ;;
     readonly)   mark="${C_WARN}跳过·只读挂载${C_0}" ;;
+    stash-fail) mark="${C_ERR}失败·stash${C_0}" ;;
     behind:*)   mark="${C_WARN}${st}${C_0}" ;;
     *)          mark="$st" ;;
   esac
